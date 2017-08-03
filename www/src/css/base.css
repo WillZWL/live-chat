@@ -11,7 +11,7 @@ ul{list-style: none;}
 div {
       -moz-user-select:none;
       -webkit-user-select:none;
-      user-select:none;    
+      user-select:none;
 }
 
 body{
@@ -44,7 +44,11 @@ body,html,.app{
 .side .main img{
 	width: 30px;
 	border-radius: 3px;
-	margin-bottom: 20px;
+    margin-bottom: 10px;
+}
+.side .main h2 {
+	margin-bottom: 10px;
+    color: #fff;
 }
 .side .main span{
 	display: block;
@@ -159,7 +163,6 @@ body,html,.app{
 ::-webkit-scrollbar-thumb {
 	border-radius: 2px;
 	background-color: rgb(201,201,201);
-  	
 }
 ::-moz-scrollbar {
 	width: 6px;
@@ -230,11 +233,11 @@ body,html,.app{
 .message .body ul li{
 	overflow:hidden;
 	margin: 15px;
-	padding: 5px;	
+	padding: 5px;
 }
 .message .body ul li img.mehead{
 	float: right;
-	width: 32px;	
+	width: 32px;
 }
 .message .body ul li .speak{
 	background-color: rgb(158,234,106);
@@ -305,7 +308,7 @@ body,html,.app{
 
 .icon {
     height: 20px;
-    margin-right:10px; 
+    margin-right:10px;
     cursor: pointer;
 }
 .icon path {
