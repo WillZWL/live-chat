@@ -4,6 +4,7 @@
   "description": "base socket.io one call one chat application",
   "main": "server.js",
   "dependencies": {
+    "mongodb": "^2.2.30",
     "socket.io": "^1.7.2"
   },
   "devDependencies": {},
