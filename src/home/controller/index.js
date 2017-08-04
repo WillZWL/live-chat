@@ -10,10 +10,39 @@ export default class extends Base {
    * index action
    * @return {Promise} []
    */
-  indexAction(){
-    //auto render template file index_index.html
+  // 客服登录页面
+  userloginAction() {
+    let id = this.cookie('user_id');
+    if (id) {
+      this.http.redirect('/home/index/index');
+    }
     return this.display();
   }
+
+  // 登录
+  async loginAction() {
+    let username = this.post('username');
+    let password = this.post('password');
+    let user = await this.model('user').where({name: username, password: password}).find();
+    if (user.id !== undefined && user.id > 0) {
+      let id = this.cookie('user_id', user.id);
+      return this.success(id);
+    } else {
+      return this.fail('login fail');
+    }
+  }
+
+  // 判断是否已登录
+  indexAction(){
+    let id = this.cookie('user_id');
+    if (id) {
+      return this.display();
+    } else {
+      this.http.redirect('/home/index/userlogin');
+    }
+  }
+
+  // 开启会话
   openAction(self){
     var socket = self.http.socket;
     this.broadcast('new message', {
@@ -21,6 +50,8 @@ export default class extends Base {
       message: self.http.data
     });
   }
+
+  // 添加用户
   adduserAction(self){
     var socket = self.http.socket;
     var username = self.http.data;
@@ -38,6 +69,8 @@ export default class extends Base {
       numUsers: numUsers
     });
   }
+
+  // 关闭
   closeAction(self){
     var socket = self.http.socket;
     // remove the username from global usernames list
@@ -51,6 +84,7 @@ export default class extends Base {
       });
     }
   }
+  // 会话
   chatAction(self){
     var socket = self.http.socket;
     // we tell the client to execute 'chat'
@@ -59,12 +93,15 @@ export default class extends Base {
       message: self.http.data
     });
   }
+  // 正在输入
   typingAction(self){
     var socket = self.http.socket;
     this.broadcast('typing', {
       username: socket.username
     });
   }
+
+  // 停止输入
   stoptypingAction(self){
     var socket = self.http.socket;
     this.broadcast('stoptyping', {
