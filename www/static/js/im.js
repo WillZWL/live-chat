@@ -22,7 +22,7 @@ $(document).on('click','.chat-active .send', function(){
 });
 
 // Enter键 发送消息
-document.onkeydown = function(e){ 
+document.onkeydown = function(e){
     if(e && e.keyCode == 13) {
 		sendMessage();
     }
@@ -59,7 +59,6 @@ function liveChat(name) {
 
 	// 连接上
 	socket.on('connect', function () {
-		console.log('connect');
 		// 请求加入
 		if(name){
 			socket.emit('adduser', name);
@@ -68,21 +67,23 @@ function liveChat(name) {
 
 	// 第一次登陆接收其它成员信息
 	socket.on('login', function (user) {
-        console.log(user + 'Login');
+        console.log('new member jsoned, total: '+ user.length);
+        console.log(user.length)
 		if(user.length >= 1){
-			for(var i =0; i<user.length; i++){
-				if (user[i] === name) {
-					incomeHtml('Me', '/static/img/head.jpg');
-				} else {
-					incomeHtml(user[i], '/static/img/head.jpg');
-				}
+			for(var i = 0; i < user.length; i++){
+                if (user[i] !== name) {
+				    incomeHtml(user[i], '/static/img/head.jpg');
+                }
 			}
 		}
 	});
+    socket.on('chat', function (data) {
+
+    })
 	// 监听中途的成员加入
 	socket.on('userjoin', function (tname, index) {
-		incomeHtml(tname,'/static/img/head.jpg');
 		console.log(tname + '加入');
+        incomeHtml(tname,'/static/img/head.jpg');
 		showNotice('/static/img/head.jpg', tname, "上线了");
 	});
 	// 接收私聊信息
@@ -91,7 +92,6 @@ function liveChat(name) {
 		if(data.addresser == data.recipient) return;
 		var head = '/static/img/head.jpg';
 		$('#'+hex_md5(data.addresser)+' .chat-msg').append('<li><img src="'+head+'"><span class="speak">'+data.body+'</span></li>');
-
 		if(document.hidden){
 			showNotice(head, data.addresser, data.body);
 		}
@@ -99,7 +99,7 @@ function liveChat(name) {
 	});
 	// 监听中途的成员离开
 	socket.on('userleft', function (data) {
-		// console.log(data + '离开');
+		console.log(data + '离开');
 		$('#' + hex_md5(data)).remove();
 		$('#li' + hex_md5(data)).remove();
 	});
@@ -150,13 +150,13 @@ function sendMessage(head = '/static/img/head.jpg'){
 	var name = window.localStorage.getItem("username");
 	if(val == '') return;
 	$('.chat-active .chat-msg').append('<li><img class="mehead" src="'+head+'"><span class="mespeak">'+val+'</span></li>');
-	var req = {
+	var data = {
 			'addresser':name,
 			'recipient':recipient,
 			'type':'plain',
 			'body':val
 		}
-	socket.emit('send private message', req);
+	socket.emit('chat', data);
 	$('.chat-active input').val('');
 	scrollToBottom(hex_md5(recipient));
 }
@@ -185,7 +185,7 @@ function showNotice(head,title,msg){
                         dir:'auto',
                         lang:'zh-CN',
                         tag:tag,//实例化的notification的id
-                        icon:'/'+head,//通知的缩略图,//icon 支持ico、png、jpg、jpeg格式
+                        icon: head,//通知的缩略图,//icon 支持ico、png、jpg、jpeg格式
                         body:msg //通知的具体内容
                     }
                 );

@@ -3,14 +3,10 @@
 import Base from './base.js';
 
 var usernames = [];
-const usocket = {};
+var usocket = {};
 var numUsers = 0;
 
 export default class extends Base {
-  /**
-   * index action
-   * @return {Promise} []
-   */
   // 客服登录页面
   userloginAction() {
     let id = this.cookie('user_id');
@@ -47,10 +43,6 @@ export default class extends Base {
   openAction(self){
     var socket = self.http.socket;
     var data = self.http.data;
-    // console.log(data);
-    // if (data.recipient in usocket) {
-    //   usocket[data.recipient].emit('receive private message', data);
-    // }
     this.broadcast('new message', {
       username: socket.username,
       message: self.http.data
@@ -61,43 +53,37 @@ export default class extends Base {
   adduserAction(self){
     var socket = self.http.socket;
     var username = self.http.data;
-    // console.log(usernames);s
-    // console.log(usocket);
-    if (usernames.indexOf(username) === -1) {
-      // we store the username in the socket session for this client
-      socket.username = username;
-      // add the client's username to the global list
-      // usernames[username] = username;
-      usernames.push(username);
-      usocket[username] = self.http.socket;
-      this.broadcast('userjoin', username, username.length - 1);
+    if (username) {
+      if (!(username in usocket)) {
+        socket.username = username;
+        if (usernames.indexOf(username) === -1) {
+          usernames.push(username);
+          numUsers++;
+        }
+        usocket[username] = this.http.socket;
+        this.broadcast('userjoin', username, username.length - 1);
+      }
+      this.emit('login', usernames);
     }
-    this.emit('login', usernames);
-    // echo globally (all clients) that a person has connected
-      // console.log(usocket);
   }
 
   // 关闭
   closeAction(self){
     var socket = self.http.socket;
-    // console.log(socket.username);
-    // remove the username from global usernames list
-    if (socket.username in usocket) {
+    if (socket.username) {
       delete usocket[socket.username];
-      // --numUsers;
+      delete usernames[socket.username]
       this.broadcast('userleft', socket.username);
     }
-    // console.log(usernames);
-    // echo globally that this client has left
   }
   // 会话
   chatAction(self){
     var socket = self.http.socket;
-    // we tell the client to execute 'chat'
-    this.broadcast('chat', {
-      username: socket.username,
-      message: self.http.data
-    });
+    var data = self.http.data;
+    console.log(data.recipient);
+    if (data.recipient in usocket) {
+      usocket[data.recipient].emit('receive private message', data);
+    }
   }
   // 正在输入
   typingAction(self){
