@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Login Page</title>
+  <style>/* Fix user-agent */
+*{box-sizing:border-box}html{font-family:"HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;font-weight:300;-webkit-font-smoothing:antialiased}html,body{height:100%;margin:0;padding:0}ul{list-style:none}.pages{height:100%;margin:0;padding:0;width:100%}.page{height:100%;position:absolute;width:100%}.login.page{background-color:#000}.login.page .form{height:100px;margin-top:-100px;position:absolute;text-align:center;top:50%;width:100%}.login.page .form .text-input{background-color:transparent;border:0;border-bottom:2px solid #fff;outline:0;padding-bottom:15px;text-align:center;width:400px}.login.page .title{font-size:200%}.login.page .text-input{font-size:200%;letter-spacing:3px}.login.page .title,.login.page .text-input{color:#fff;font-weight:100}.chat.page{display:none}.messages{font-size:150%}.inputMessage{font-size:100%}.log{color:gray;font-size:70%;margin:5px;text-align:center}.chatArea{height:100%;padding-bottom:60px}.messages{height:100%;margin:0;overflow-y:scroll;padding:10px 20px 10px 20px}.message.typing .messageBody{color:gray}
+  </style>
+</head>
+<body>
+  <ul class="pages">
+    <li class="chat page">
+      <div class="chatArea">
+        <ul class="messages"></ul>
+      </div>
+      <input class="inputMessage" placeholder="Type here..."/>
+    </li>
+    <li class="login page">
+      <div class="form">
+        <h3 class="title">name</h3>
+        name:<input class="text-input username" type="text" maxlength="14" />
+        <h3 class="title">Password</h3>
+        <input class="text-input password" type="text" maxlength="14" />
+        <h3 class="title">
+          <input type="button" class="login-btn" name="Login" value="Login">
+        </h3>
+      </div>
+    </li>
+  </ul>
+  <script src="http://s4.qhimg.com/static/535dde855bc726e2/socket.io-1.2.0.js"></script>
+  <script src="http://s4.qhimg.com/static/8b5050af3b8512e1/jquery.js"></script>
+  <script>
+  var socket = io('http://localhost:8360');
+
+  $('.login-btn').click(function(){
+    var $username = $('.username').val(); // Input for username
+    var $password = $('.password').val();
+    if ($username && $password) {
+      var data = {username: $username, password: $password};
+      $.ajax({
+        type: "POST",
+        url: '/home/index/login',
+        data,
+        dataType: "json",
+        success: function(res) {
+          if (res.errno == 0) {
+            window.location.href = '/home/index/index'
+          } else {
+
+          }
+        },
+        error: function(res) {
+          console.log(res);
+        }
+      })
+    } else {
+      alert('Login Fail')
+    }
+  });
+
+  </script>
+</body>
+</html>
