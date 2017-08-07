@@ -17,7 +17,7 @@ node www/testing.js
 *production*
 
 ```js
-node www/production.js 
+node www/production.js
 ```
 
 or use pm2 to manage node:

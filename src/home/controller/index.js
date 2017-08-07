@@ -8,8 +8,8 @@ var numUsers = 0;
 
 export default class extends Base {
   // 客服登录页面
-  userloginAction() {
-    let id = this.cookie('user_id');
+  async userloginAction() {
+    let id = await this.session('user_id');
     if (id) {
       this.http.redirect('/home/index/index');
     }
@@ -22,16 +22,17 @@ export default class extends Base {
     let password = this.post('password');
     let user = await this.model('user').where({name: username, password: password}).find();
     if (user.id !== undefined && user.id > 0) {
-      let id = this.cookie('user_id', user.id);
-      return this.success(id);
+      let id = await this.session('user_id', user.id);
+      await this.session('username', user.name);
+      return this.success({user_id: user.id, username: user.name});
     } else {
       return this.fail('login fail');
     }
   }
 
   // 判断是否已登录
-  indexAction(){
-    let id = this.cookie('user_id');
+  async indexAction(){
+    let id = await this.session('user_id');
     if (id) {
       return this.display();
     } else {
