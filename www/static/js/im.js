@@ -57,8 +57,6 @@ function liveChat(name) {
 
 	// 第一次登陆接收其它成员信息
 	socket.on('login', (user) => {
-        console.log('new member jsoned, total: '+ user.length);
-        console.log(user.length)
 		if(user.length >= 1){
 			for(var i = 0; i < user.length; i++){
                 if (user[i] !== name) {
@@ -97,12 +95,10 @@ function liveChat(name) {
 		$('.outline').css('display','block');
 		$('#session').children().remove();
 		$('#chat').children().remove();
-		console.log('you have been disconnected');
 	});
 
 	// 重连
 	socket.on('reconnect', () => {
-		console.log('you have been reconnected');
 		$('.outline').css('display','none');
 		//继续用原来的name todo
 	});

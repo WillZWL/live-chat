@@ -7,37 +7,15 @@ var usocket = {};
 var numUsers = 0;
 
 export default class extends Base {
-  // 客服登录页面
-  async userloginAction() {
+  async __before(){
     let id = await this.session('user_id');
-    if (id) {
-      this.http.redirect('/home/index/index');
-    }
-    return this.display();
-  }
-
-  // 登录
-  async loginAction() {
-    let username = this.post('username');
-    let password = this.post('password');
-    let user = await this.model('user').where({name: username, password: password}).find();
-    if (user.id !== undefined && user.id > 0) {
-      let id = await this.session('user_id', user.id);
-      await this.session('username', user.name);
-      return this.success({user_id: user.id, username: user.name});
-    } else {
-      return this.fail('login fail');
+    if (!id) {
+      this.http.redirect('/home/login/index');
     }
   }
-
   // 判断是否已登录
   async indexAction(){
-    let id = await this.session('user_id');
-    if (id) {
-      return this.display();
-    } else {
-      this.http.redirect('/home/index/userlogin');
-    }
+    return this.display();
   }
 
   // 开启会话
