@@ -1,4 +1,5 @@
 'use strict';
+const moment = require('moment');
 
 import Base from './base.js';
 
@@ -7,6 +8,7 @@ var usocket = {};
 var numUsers = 0;
 
 export default class extends Base {
+  // 验证是否登录
   async __before(){
     let id = await this.session('user_id');
     if (!id) {
@@ -56,9 +58,10 @@ export default class extends Base {
     }
   }
   // 会话
-  chatAction(self){
+  async chatAction(self){
     var socket = self.http.socket;
     var data = self.http.data;
+    await this.writeMessageToDatabase(data);
     if (data.recipient in usocket) {
       usocket[data.recipient].emit('receive private message', data);
     }
@@ -77,5 +80,19 @@ export default class extends Base {
     this.broadcast('stoptyping', {
       username: socket.username
     });
+  }
+
+  async writeMessageToDatabase(data) {
+    let from_user = await this.model('user').where({name: data.addresser}).find();
+    let to_user = await this.model('user').where({name: data.recipient}).find();
+    let from_id = from_user.id;
+    let to_id = to_user.id;
+    let message = {
+      from_user: from_id,
+      to_user: to_id,
+      message: data.body,
+      create_at: moment().format('YYYY-MM-DD HH:mm:ss')
+    };
+    await this.model('message').add(message);
   }
 }

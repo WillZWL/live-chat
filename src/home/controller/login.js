@@ -20,8 +20,9 @@ export default class extends Base {
     let encryptPassword = global.encryptPassword(password, salt);
     let user = await this.model('user').where({name: username, password: encryptPassword}).find();
     if (user.id !== undefined && user.id > 0) {
-      let id = await this.session('user_id', user.id);
+      await this.session('user_id', user.id);
       await this.session('username', user.name);
+      await this.cookie('user_id', user.id);
       return this.success({user_id: user.id, username: user.name});
     } else {
       return this.fail('登录失败');
@@ -30,6 +31,8 @@ export default class extends Base {
 
   async logoutAction() {
     await this.session('user_id', '');
+    await this.session('username', '');
+    await this.cookie('user_id', '');
     this.http.redirect('/home/login/index');
   }
 }

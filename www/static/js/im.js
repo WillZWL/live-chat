@@ -66,7 +66,7 @@ function liveChat(name) {
 		}
 	});
     socket.on('chat', (data) => {
-
+        console.log(data);
     })
 	// 监听中途的成员加入
 	socket.on('userjoin', (tname, index) => {
