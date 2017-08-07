@@ -54,10 +54,14 @@ body,html,.app{
 	display: block;
 	overflow:hidden;
 }
+.side .main span a {
+    color: #fff;
+    text-decoration: none;
+}
 .sicon {
     height: 30px;
-    margin-right:10px; 
-    margin-bottom: 30px;
+    margin-right:10px;
+    margin-bottom: 10px;
     cursor: pointer;
 }
 .sicon path {

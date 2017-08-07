@@ -5,4 +5,5 @@
 export default {
   //cluster_on: true //socket.io not support cluster mode
   //key: value
+  salt: '!@#$%^&*987654321'
 };
