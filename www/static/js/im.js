@@ -1,34 +1,24 @@
 var name = window.localStorage.getItem("username");
 var socket;
-
-// 要求写一个名字
-// ToDo 需要完成登录
-if (name === 'null') {
-	smalltalk.prompt('身份验证', '你的名字?', '').then(function(name) {
-		if (window.localStorage.getItem("username") === null) {
-			window.localStorage.setItem("username", name);
-		}
-		liveChat(name);
-	}, function() {
-	    document.write('登录失败');
-	});
-} else {
-	liveChat(name);
-}
-
-// 点击发送
-$(document).on('click','.chat-active .send', function(){
-	sendMessage();
+$(function () {
+    if (name) {
+	    liveChat(name);
+    } else {
+        window.location.href = '/home/index/index';
+    }
 });
 
+// 点击发送
+$(document).on('click','.chat-active .send', () => sendMessage());
+
 // Enter键 发送消息
-document.onkeydown = function(e){
+document.onkeydown = (e) => {
     if(e && e.keyCode == 13) {
 		sendMessage();
     }
 }
 //active li
-$(document).on('click','#session li',function(){
+$(document).on('click','#session li',() => {
 	$('.active').removeClass('active');
 	$(this).addClass('active');
 	var index = $(this).index();
@@ -36,13 +26,13 @@ $(document).on('click','#session li',function(){
 	$('.chat:eq('+index+')').addClass('chat-active');
 });
 
-$(document).on('click','.chat-active .emoji',function(){
+$(document).on('click','.chat-active .emoji',() => {
 	$('#emoji').css('display','block');
 });
 
-$('#emoji span').click(function(){
+$('#emoji span').click(() => {
 	var val = $('.chat-active input[type=text]').val();
-	$('.chat-active input[type=text]').val(val+$(this).text()); 
+	$('.chat-active input[type=text]').val(val+$(this).text());
 	$('#emoji').css('display','none');
 });
 
@@ -53,12 +43,12 @@ function liveChat(name) {
 	$('#app .main h2').text(name);
 
 	// 正在连接
-	socket.on('connecting', function () {
+	socket.on('connecting', () => {
 		console.log('connecting');
 	});
 
 	// 连接上
-	socket.on('connect', function () {
+	socket.on('connect', () => {
 		// 请求加入
 		if(name){
 			socket.emit('adduser', name);
@@ -66,7 +56,7 @@ function liveChat(name) {
 	});
 
 	// 第一次登陆接收其它成员信息
-	socket.on('login', function (user) {
+	socket.on('login', (user) => {
         console.log('new member jsoned, total: '+ user.length);
         console.log(user.length)
 		if(user.length >= 1){
@@ -77,17 +67,16 @@ function liveChat(name) {
 			}
 		}
 	});
-    socket.on('chat', function (data) {
+    socket.on('chat', (data) => {
 
     })
 	// 监听中途的成员加入
-	socket.on('userjoin', function (tname, index) {
-		console.log(tname + '加入');
+	socket.on('userjoin', (tname, index) => {
         incomeHtml(tname,'/static/img/head.jpg');
 		showNotice('/static/img/head.jpg', tname, "上线了");
 	});
 	// 接收私聊信息
-	socket.on('receive private message', function (data) {
+	socket.on('receive private message', (data) => {
 		playRing();
 		if(data.addresser == data.recipient) return;
 		var head = '/static/img/head.jpg';
@@ -98,14 +87,13 @@ function liveChat(name) {
 		scrollToBottom(hex_md5(data.addresser));
 	});
 	// 监听中途的成员离开
-	socket.on('userleft', function (data) {
-		console.log(data + '离开');
+	socket.on('userleft', (data) => {
 		$('#' + hex_md5(data)).remove();
 		$('#li' + hex_md5(data)).remove();
 	});
 
 	// 连接失败
-	socket.on('close', function () {
+	socket.on('close', () => {
 		$('.outline').css('display','block');
 		$('#session').children().remove();
 		$('#chat').children().remove();
@@ -113,14 +101,14 @@ function liveChat(name) {
 	});
 
 	// 重连
-	socket.on('reconnect', function () {
+	socket.on('reconnect', () => {
 		console.log('you have been reconnected');
 		$('.outline').css('display','none');
 		//继续用原来的name todo
 	});
 
 	// 监听重连错误 会多次尝试
-	socket.on('reconnect_error', function () {
+	socket.on('reconnect_error', () => {
 		console.log('attempt to reconnect has failed');
 	});
 }

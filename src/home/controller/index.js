@@ -81,7 +81,6 @@ export default class extends Base {
   chatAction(self){
     var socket = self.http.socket;
     var data = self.http.data;
-    console.log(data.recipient);
     if (data.recipient in usocket) {
       usocket[data.recipient].emit('receive private message', data);
     }
